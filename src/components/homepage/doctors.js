@@ -18,14 +18,17 @@ export default function Doctors() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 
           {/* Doctor Card */}
-          <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 text-center">
-            <div className="w-32 h-32 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-5xl mb-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center
+                          shadow-md hover:shadow-xl hover:-translate-y-1
+                          transition-all duration-300">
+            <div className="w-32 h-32 mx-auto rounded-full bg-green-100
+                            flex items-center justify-center text-5xl mb-4">
               👨‍⚕️
             </div>
             <h3 className="text-xl font-semibold text-gray-800">
               Dr. Ramesh Kumar
             </h3>
-            <p className="text-blue-600 font-medium mb-2">
+            <p className="text-green-600 font-medium mb-2">
               General Physician
             </p>
             <p className="text-gray-600 text-sm">
@@ -33,14 +36,17 @@ export default function Doctors() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 text-center">
-            <div className="w-32 h-32 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-5xl mb-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center
+                          shadow-md hover:shadow-xl hover:-translate-y-1
+                          transition-all duration-300">
+            <div className="w-32 h-32 mx-auto rounded-full bg-green-100
+                            flex items-center justify-center text-5xl mb-4">
               👩‍⚕️
             </div>
             <h3 className="text-xl font-semibold text-gray-800">
               Dr. Anitha Rao
             </h3>
-            <p className="text-blue-600 font-medium mb-2">
+            <p className="text-green-600 font-medium mb-2">
               Cardiologist
             </p>
             <p className="text-gray-600 text-sm">
@@ -48,14 +54,17 @@ export default function Doctors() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 text-center">
-            <div className="w-32 h-32 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-5xl mb-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center
+                          shadow-md hover:shadow-xl hover:-translate-y-1
+                          transition-all duration-300">
+            <div className="w-32 h-32 mx-auto rounded-full bg-green-100
+                            flex items-center justify-center text-5xl mb-4">
               👨‍⚕️
             </div>
             <h3 className="text-xl font-semibold text-gray-800">
               Dr. Suresh Patel
             </h3>
-            <p className="text-blue-600 font-medium mb-2">
+            <p className="text-green-600 font-medium mb-2">
               Orthopedic Specialist
             </p>
             <p className="text-gray-600 text-sm">
