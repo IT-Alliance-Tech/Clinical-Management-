@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AboutCTA() {
   return (
     <section className="py-28 bg-gradient-to-r from-white via-green-50 to-green-100">
@@ -13,16 +15,23 @@ export default function AboutCTA() {
           take the first step toward better health today.
         </p>
 
+        {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold
-                             hover:bg-green-700 transition">
+          <Link
+            href="/book-appointment"
+            className="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold
+                       hover:bg-green-700 transition text-center"
+          >
             Book Appointment
-          </button>
+          </Link>
 
-          <button className="border border-green-600 text-green-600 px-8 py-4 rounded-lg
-                             font-semibold hover:bg-green-600 hover:text-white transition">
+          <Link
+            href="/contactUs"
+            className="border border-green-600 text-green-600 px-8 py-4 rounded-lg
+                       font-semibold hover:bg-green-600 hover:text-white transition text-center"
+          >
             Contact Us
-          </button>
+          </Link>
         </div>
 
       </div>

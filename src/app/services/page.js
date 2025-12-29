@@ -11,6 +11,7 @@ import preventiveImg from "../../../public/services/image 8.png";
 import physioImg from "../../../public/services/image 3.png";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ServicesPage() {
   const services = [
@@ -70,7 +71,7 @@ export default function ServicesPage() {
     <main className="bg-white text-gray-800">
 
       {/* Hero */}
-      <section className="bg-gradient-to-r from-green-700 to-green-600 text-white py-28">
+      <section className="bg-gradient-to-r from-green-700 to-green-600 text-white py-36">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-4">
             Our Services
@@ -111,31 +112,15 @@ export default function ServicesPage() {
 
                 {/* Content */}
                 <div className="p-5 space-y-3">
-
-                  {/* Title with icon */}
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <span className="text-green-600 text-xl">➕</span>
                     {service.title}
                   </h3>
 
-                  {/* Description with icon */}
                   <p className="text-sm text-gray-600 leading-relaxed flex gap-2">
                     <span className="text-green-600 mt-0.5">✔</span>
                     {service.desc}
                   </p>
-
-                  {/* CTA */}
-                  {/* <div className="pt-2">
-                    <span
-                      className="text-sm text-green-600 font-medium
-                                 inline-flex items-center gap-1
-                                 group-hover:gap-2 transition-all"
-                    >
-                      Learn more
-                      <span>→</span>
-                    </span>
-                  </div> */}
-
                 </div>
               </div>
             ))}
@@ -153,12 +138,15 @@ export default function ServicesPage() {
           <p className="text-gray-600 max-w-2xl mx-auto mb-6">
             Book an appointment with our experienced medical professionals.
           </p>
-          <button
-            className="bg-green-600 text-white px-8 py-3 rounded-lg
+
+          {/* CTA LINK */}
+          <Link
+            href="/book-appointment"
+            className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg
                        font-semibold hover:bg-green-700 transition"
           >
             Book Appointment
-          </button>
+          </Link>
         </div>
       </section>
 

@@ -1,7 +1,9 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="bg-gradient-to-r from-green-600 to-green-500 text-white">
-      <div className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
         <div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -13,17 +15,27 @@ export default function Hero() {
             patient-focused care.
           </p>
 
+          {/* Buttons */}
           <div className="flex gap-4">
-            <button className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
+            <Link
+              href="/book-appointment"
+              className="bg-white text-green-600 px-6 py-3 rounded-lg
+                         font-semibold hover:bg-gray-100 transition"
+            >
               Book Appointment
-            </button>
+            </Link>
 
-            <button className="border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition">
+            <Link
+              href="/services"
+              className="border border-white px-6 py-3 rounded-lg
+                         font-semibold hover:bg-white hover:text-green-600 transition"
+            >
               View Services
-            </button>
+            </Link>
           </div>
         </div>
 
+        {/* Clinic Timings Card */}
         <div className="bg-white rounded-2xl p-8 text-gray-800 shadow-xl">
           <h3 className="text-xl font-semibold mb-4 text-green-600">
             Clinic Timings
