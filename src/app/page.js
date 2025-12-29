@@ -1,8 +1,8 @@
-import Navbar from "@/components/homepage/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/homepage/hero";
 import Services from "@/components/homepage/services";
 import Doctors from "@/components/homepage/doctors";
-import Footer from "@/components/homepage/footer";
+import Footer from "@/components/layout/footer";
 import WhyChooseUs from "@/components/homepage/whyChooseUs";
 import Testimonials from "@/components/homepage/testimonials";
 
