@@ -1,17 +1,21 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/hero";
-import Services from "@/components/services";
-import Doctors from "@/components/doctors";
-import Footer from "@/components/footer";
+import Navbar from "@/components/homepage/Navbar";
+import Hero from "@/components/homepage/hero";
+import Services from "@/components/homepage/services";
+import Doctors from "@/components/homepage/doctors";
+import Footer from "@/components/homepage/footer";
+import WhyChooseUs from "@/components/homepage/whyChooseUs";
+import Testimonials from "@/components/homepage/testimonials";
 
 export default function Home() {
   return (
     <main>
-      <Navbar />
+      {/* <Navbar /> */}
       <Hero />
       <Services />
+      <WhyChooseUs />
       <Doctors />
-      <Footer />
+      <Testimonials />
+      {/* <Footer /> */}
     </main>
   );
 }

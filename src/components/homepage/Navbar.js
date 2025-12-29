@@ -9,7 +9,7 @@ export default function Navbar() {
 
         <ul className="hidden md:flex gap-8 text-gray-700 font-medium">
           <li className="hover:text-green-600 cursor-pointer">Home</li>
-          <li className="hover:text-green-600 cursor-pointer">About</li>
+          <li className="hover:text-green-600 cursor-pointer">AboutUs</li>
           <li className="hover:text-green-600 cursor-pointer">Services</li>
           <li className="hover:text-green-600 cursor-pointer">Doctors</li>
           <li className="hover:text-green-600 cursor-pointer">Contact</li>
