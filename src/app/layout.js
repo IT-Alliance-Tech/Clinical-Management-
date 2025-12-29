@@ -1,6 +1,6 @@
 import "./globals.css";
-import Navbar from "@/components/homepage/Navbar";
-import Footer from "@/components/homepage/footer";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/footer";
 
 export const metadata = {
   title: "CarePlus Clinic",
