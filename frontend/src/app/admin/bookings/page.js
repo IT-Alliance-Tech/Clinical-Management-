@@ -37,6 +37,8 @@ import Link from "next/link";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
 /* ---------------- IMPROVED LIGHT THEME ---------------- */
 const fixedLightTheme = createTheme({
@@ -135,7 +137,7 @@ const [historyLoading, setHistoryLoading] = useState(false);
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:5000/api/bookings/admin/all");
+        const res = await fetch(`${API_BASE_URL}/api/bookings/admin/all`);
         if (!res.ok) throw new Error("Failed to fetch bookings");
         const data = await res.json();
         setAllBookings(data.data || []);
@@ -184,7 +186,7 @@ const [historyLoading, setHistoryLoading] = useState(false);
     if (!confirm("Are you sure you want to delete this booking?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete booking");
@@ -199,8 +201,8 @@ const handleViewHistory = async (booking) => {
     setHistoryLoading(true);
 
     const res = await fetch(
-      `http://localhost:5000/api/bookings/admin/history?email=${booking.email}&phone=${booking.phone}&excludeId=${booking._id}`
-    );
+  `${API_BASE_URL}/api/bookings/admin/history?email=${booking.email}&phone=${booking.phone}&excludeId=${booking._id}`
+);
 
     if (!res.ok) throw new Error("Failed to fetch history");
 
@@ -225,8 +227,9 @@ const handleViewHistory = async (booking) => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/${editBooking._id}`,
-        {
+  `${API_BASE_URL}/api/bookings/${editBooking._id}`,
+  {
+
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editBooking),

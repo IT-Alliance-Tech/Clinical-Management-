@@ -15,6 +15,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LogoutIcon from "@mui/icons-material/Logout";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -32,10 +34,11 @@ export default function AdminDashboardPage() {
         setLoading(true);
 
         const [bookingsRes, contactsRes, doctorsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/bookings/admin/all"),
-          fetch("http://localhost:5000/api/contacts"),
-          fetch("http://localhost:5000/api/doctors/admin/all"),
-        ]);
+  fetch(`${API_BASE_URL}/api/bookings/admin/all`),
+  fetch(`${API_BASE_URL}/api/contacts`),
+  fetch(`${API_BASE_URL}/api/doctors/admin/all`),
+]);
+
 
         if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
         if (!contactsRes.ok) throw new Error("Failed to fetch contacts");

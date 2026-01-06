@@ -35,7 +35,7 @@ export default function BookAppointmentPage() {
     setForm((p) => ({ ...p, [name]: value }));
   };
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setMessage(null);
@@ -46,13 +46,13 @@ export default function BookAppointmentPage() {
       email: form.email,
       phone: form.phone,
       department: form.department,
-      date: form.date,   // ✅ send as string
-      time: form.time,   // ✅ send as string
+      date: form.date,
+      time: form.time,
       reason: form.reason,
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/bookings`,
+      `${API_BASE_URL}/api/bookings`,
       {
         method: "POST",
         headers: {

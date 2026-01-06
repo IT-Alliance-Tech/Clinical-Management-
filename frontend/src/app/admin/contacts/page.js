@@ -22,6 +22,9 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
 export default function AdminContactsPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [contacts, setContacts] = useState([]);
@@ -37,29 +40,31 @@ export default function AdminContactsPage() {
   useEffect(() => {
     if (!isMounted) return;
 
-    const fetchContacts = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/contacts', {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-          },
-        });
+   const fetchContacts = async () => {
+  try {
+    setLoading(true);
 
-        if (response.status >= 400) {
-          throw new Error('Failed to fetch contacts');
-        }
+    const response = await fetch(`${API_BASE_URL}/api/contacts`, {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+      },
+    });
 
-        const data = await response.json();
-        setContacts(data.data || []);
-      } catch (err) {
-        setError(err.message || 'Failed to load contacts');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (response.status >= 400) {
+      throw new Error('Failed to fetch contacts');
+    }
+
+    const data = await response.json();
+    setContacts(data.data || []);
+  } catch (err) {
+    setError(err.message || 'Failed to load contacts');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchContacts();
   }, [isMounted]);
