@@ -1,109 +1,158 @@
 const Booking = require("../models/booking");
+const sendEmail = require("../utils/sendEmail");
 
-/**
- * ❌ DEPRECATED
- * Direct booking creation is disabled.
- *
- * All bookings MUST come from Calendly webhooks.
- * This endpoint exists only to avoid breaking old clients.
- */
+/* ===============================
+   CREATE BOOKING (USER)
+   =============================== */
 exports.createBooking = async (req, res) => {
-  console.warn("⚠️  Deprecated endpoint hit: POST /api/bookings");
-  console.warn("ℹ️  Bookings are created only via Calendly webhooks");
-
-  return res.status(403).json({
-    success: false,
-    message:
-      "Direct booking creation is disabled. Please book via Calendly.",
-    note:
-      "Calendly webhook automatically stores bookings after scheduling.",
-  });
-};
-
-/**
- * ✅ Admin: Get all bookings
- *
- * Data is returned EXACTLY as stored from Calendly:
- * - patientName
- * - email
- * - appointmentStart
- * - appointmentEnd
- * - duration
- * - status
- * - source
- * - timestamps
- */
-exports.getAllBookings = async (req, res) => {
   try {
-    // Disable caching to prevent 304 responses
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+    const { name, email, phone, department, date, time, reason } = req.body;
 
-    const bookings = await Booking.find()
-      .sort({ createdAt: -1 })
-      .lean();
+    if (!name || !email || !phone || !department || !date || !time) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided",
+      });
+    }
 
-    // Return raw Calendly fields exactly as stored
-    const data = bookings.map((b) => ({
-      _id: b._id,
-      patientName: b.patientName,
-      email: b.email,
-      appointmentStart: b.appointmentStart,
-      appointmentEnd: b.appointmentEnd,
-      duration: b.duration,
-      status: b.status,
-      source: b.source,
-      createdAt: b.createdAt,
-    }));
+    const booking = await Booking.create({
+      name,
+      email,
+      phone,
+      department,
+      date,
+      time,
+      reason,
+      status: "Pending",
+    });
 
-    res.status(200).json({
+    // 📧 EMAIL TO USER (PENDING)
+    try {
+      await sendEmail({
+        to: email,
+        name,
+        department,
+        date,
+        time,
+        status: "Pending",
+      });
+    } catch (err) {
+      console.log("Email failed (booking saved):", err.message);
+    }
+
+    return res.status(201).json({
       success: true,
-      total: data.length,
-      data: data,
+      message: "Booking created successfully",
+      data: booking,
     });
   } catch (error) {
-    console.error('Error fetching bookings:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: 'Failed to fetch bookings',
+      message: "Server error while creating booking",
     });
   }
 };
 
+/* ===============================
+   ADMIN – GET ALL BOOKINGS
+   =============================== */
+exports.getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().sort({ createdAt: -1 });
+    return res.json({ success: true, data: bookings });
+  } catch {
+    return res.status(500).json({ success: false });
+  }
+};
 
-/**
- * ✅ Admin: Update booking
- */
+/* ===============================
+   ADMIN – UPDATE BOOKING
+   =============================== */
 exports.updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const { status, rescheduleReason } = req.body;
 
-    const booking = await Booking.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: "Booking not found",
-      });
+    const oldBooking = await Booking.findById(id);
+    if (!oldBooking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
     }
 
-    console.log(`✅ Booking ${id} updated`);
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+        ...(status === "Rescheduled" && {
+          rescheduledAt: new Date(),
+          rescheduleReason,
+        }),
+      },
+      { new: true }
+    );
 
-    return res.status(200).json({
+    // 📧 EMAIL WHEN STATUS CHANGES
+    if (oldBooking.status !== updatedBooking.status) {
+      try {
+        await sendEmail({
+          to: updatedBooking.email,
+          name: updatedBooking.name,
+          department: updatedBooking.department,
+          date: updatedBooking.date,
+          time: updatedBooking.time,
+          status: updatedBooking.status,
+          rescheduleReason:
+            updatedBooking.status === "Rescheduled"
+              ? updatedBooking.rescheduleReason
+              : undefined,
+        });
+      } catch (err) {
+        console.log("Email failed:", err.message);
+      }
+    }
+
+    return res.json({
       success: true,
-      data: booking,
+      message: "Booking updated successfully",
+      data: updatedBooking,
     });
-  } catch (error) {
-    console.error("❌ Error updating booking:", error);
+  } catch {
+    return res.status(500).json({ success: false });
+  }
+};
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to update booking",
-    });
+/* ===============================
+   ADMIN – DELETE BOOKING
+   =============================== */
+exports.deleteBooking = async (req, res) => {
+  try {
+    const deleted = await Booking.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Not found" });
+    }
+    return res.json({ success: true, message: "Booking deleted" });
+  } catch {
+    return res.status(500).json({ success: false });
+  }
+};
+
+/* ===============================
+   ADMIN – BOOKING HISTORY (USER)
+   =============================== */
+exports.getBookingHistory = async (req, res) => {
+  try {
+    const { email, phone, excludeId } = req.query;
+
+    let query = email ? { email } : { phone };
+    if (excludeId) query._id = { $ne: excludeId };
+
+    const history = await Booking.find(query).sort({ createdAt: -1 });
+
+    return res.json({ success: true, data: history });
+  } catch {
+    return res.status(500).json({ success: false });
   }
 };
