@@ -1,14 +1,14 @@
-// Image imports
-import consultationImg from "../../../public/services/image 4.png";
-import pharmacyImg from "../../../public/services/image 7.png";
-import diagnosticImg from "../../../public/services/image 5.png";
-import cardiacImg from "../../../public/services/image 6.png";
-import orthoImg from "../../../public/services/image 2.png";
-import neuroImg from "../../../public/services/image 1.png";
-import pediatricImg from "../../../public/services/Pediat.png";
-import womenImg from "../../../public/services/women.png";
-import preventiveImg from "../../../public/services/image 8.png";
-import physioImg from "../../../public/services/image 3.png";
+// Image imports (NO spaces, lowercase filenames)
+import service1 from "../../../public/services/service-1.png";
+import service2 from "../../../public/services/service-2.png";
+import service3 from "../../../public/services/service-3.png";
+import service4 from "../../../public/services/service-4.png";
+import service5 from "../../../public/services/service-5.png";
+import service6 from "../../../public/services/service-6.png";
+import service7 from "../../../public/services/service-7.png";
+import service8 from "../../../public/services/service-8.png";
+import service9 from "../../../public/services/service-9.png";
+import service10 from "../../../public/services/service-10.png";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -18,64 +18,61 @@ export default function ServicesPage() {
     {
       title: "General Consultation",
       desc: "Comprehensive health checkups and consultations for all age groups.",
-      img: consultationImg,
+      img: service1,
     },
     {
       title: "Pharmacy Services",
       desc: "On-site pharmacy with prescribed medicines and healthcare products.",
-      img: pharmacyImg,
+      img: service2,
     },
     {
       title: "Diagnostic Tests",
       desc: "Accurate lab testing with quick and reliable reports.",
-      img: diagnosticImg,
+      img: service3,
     },
     {
       title: "Cardiac Care",
       desc: "Preventive and ongoing care for heart-related conditions.",
-      img: cardiacImg,
+      img: service4,
     },
     {
       title: "Orthopedic Care",
       desc: "Treatment for bone, joint, and muscle-related issues.",
-      img: orthoImg,
+      img: service5,
     },
     {
       title: "Neurology",
       desc: "Specialized care for brain and nervous system disorders.",
-      img: neuroImg,
+      img: service6,
     },
     {
       title: "Pediatric Care",
       desc: "Dedicated healthcare services for infants, children, and adolescents.",
-      img: pediatricImg,
+      img: service7,
     },
     {
       title: "Women’s Health",
       desc: "Comprehensive care focused on women’s health and wellness needs.",
-      img: womenImg,
+      img: service8,
     },
     {
       title: "Preventive Health Checkups",
       desc: "Routine screenings and preventive care to maintain long-term health.",
-      img: preventiveImg,
+      img: service9,
     },
     {
       title: "Physiotherapy",
       desc: "Rehabilitation and physical therapy for injury recovery and mobility.",
-      img: physioImg,
+      img: service10,
     },
   ];
 
   return (
     <main className="bg-white text-gray-800">
-
       {/* Hero */}
       <section className="bg-gradient-to-r from-green-700 to-green-600 text-white py-36">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-4">
-            Our Services
-          </h1>
+          <h1 className="text-5xl font-bold mb-4">Our Services</h1>
           <p className="text-lg text-green-100 max-w-3xl mx-auto">
             Comprehensive healthcare services delivered with expertise and care.
           </p>
@@ -85,14 +82,12 @@ export default function ServicesPage() {
       {/* Services Grid */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => (
               <div
                 key={service.title}
                 className="group bg-white border border-gray-200 rounded-xl
-                           overflow-hidden shadow-sm
-                           hover:shadow-xl transition"
+                           overflow-hidden shadow-sm hover:shadow-xl transition"
               >
                 {/* Image */}
                 <div className="h-48 relative">
@@ -100,12 +95,15 @@ export default function ServicesPage() {
                     src={service.img}
                     alt={service.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition duration-300"
                   />
 
                   {/* Badge */}
-                  <span className="absolute top-3 left-3 bg-white/90 text-green-600
-                                   text-xs font-semibold px-3 py-1 rounded-full shadow">
+                  <span
+                    className="absolute top-3 left-3 bg-white/90 text-green-600
+                               text-xs font-semibold px-3 py-1 rounded-full shadow"
+                  >
                     Medical Service
                   </span>
                 </div>
@@ -125,7 +123,6 @@ export default function ServicesPage() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -139,7 +136,6 @@ export default function ServicesPage() {
             Book an appointment with our experienced medical professionals.
           </p>
 
-          {/* CTA LINK */}
           <Link
             href="/book-appointment"
             className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg
@@ -149,7 +145,6 @@ export default function ServicesPage() {
           </Link>
         </div>
       </section>
-
     </main>
   );
 }
