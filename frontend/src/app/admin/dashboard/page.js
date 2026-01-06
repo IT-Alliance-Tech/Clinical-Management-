@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
             borderRadius: 2,
           }}
         >
-          Logout
+          Logout admin
         </Button>
       </Box>
 
