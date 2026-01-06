@@ -1,14 +1,14 @@
 // Image imports (NO spaces, lowercase filenames)
-import service1 from "../../../public/services/service-1.png";
-import service2 from "../../../public/services/service-2.png";
-import service3 from "../../../public/services/service-3.png";
-import service4 from "../../../public/services/service-4.png";
-import service5 from "../../../public/services/service-5.png";
-import service6 from "../../../public/services/service-6.png";
-import service7 from "../../../public/services/service-7.png";
-import service8 from "../../../public/services/service-8.png";
-import service9 from "../../../public/services/service-9.png";
-import service10 from "../../../public/services/service-10.png";
+import service1 from "../../../public/services/serviceone.png";
+import service2 from "../../../public/services/servicetwo.png";
+import service3 from "../../../public/services/servicethree.png";
+import service4 from "../../../public/services/servicefour.png";
+import service5 from "../../../public/services/servicefive.png";
+import service6 from "../../../public/services/servicesix.png";
+import service7 from "../../../public/services/serviceseven.png";
+import service8 from "../../../public/services/serviceeight.png";
+import service9 from "../../../public/services/servicenine.png";
+import service10 from "../../../public/services/health.png";
 
 import Image from "next/image";
 import Link from "next/link";
