@@ -29,10 +29,24 @@ export default function BookAppointmentPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [reportFile, setReportFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const handleChange = (e) => { 
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    setReportFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const removeFile = () => {
+    setReportFile(null);
+    setPreviewUrl(null);
+    const input = document.getElementById("reportUpload");
+    if (input) input.value = "";
   };
 
   const handleSubmit = async (e) => {
@@ -43,7 +57,6 @@ export default function BookAppointmentPage() {
     try {
       let reportUrl = null;
 
-      // ✅ Upload file only if selected
       if (reportFile) {
         const fileExt = reportFile.name.split(".").pop();
         const fileName = `${Date.now()}-${form.phone}.${fileExt}`;
@@ -52,9 +65,7 @@ export default function BookAppointmentPage() {
           .from("patient-reports")
           .upload(fileName, reportFile);
 
-        if (error) {
-          throw new Error("Failed to upload medical report");
-        }
+        if (error) throw new Error("Failed to upload medical report");
 
         const { data } = supabase.storage
           .from("patient-reports")
@@ -63,33 +74,17 @@ export default function BookAppointmentPage() {
         reportUrl = data.publicUrl;
       }
 
-      const payload = {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        department: form.department,
-        date: form.date,
-        time: form.time,
-        reason: form.reason,
-        reportUrl, // 👈 added
-      };
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/bookings`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, reportUrl }),
         }
       );
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to book appointment");
-      }
+      if (!res.ok) throw new Error(data.message || "Failed to book appointment");
 
       setMessage({
         type: "success",
@@ -106,12 +101,9 @@ export default function BookAppointmentPage() {
         reason: "",
       });
 
-      setReportFile(null);
+      removeFile();
     } catch (error) {
-      setMessage({
-        type: "error",
-        text: error.message,
-      });
+      setMessage({ type: "error", text: error.message });
     } finally {
       setLoading(false);
     }
@@ -119,10 +111,9 @@ export default function BookAppointmentPage() {
 
   return (
     <main className="bg-white text-gray-800">
-
       {/* HERO */}
       <section className="relative bg-gradient-to-r from-green-700 via-green-600 to-green-700 text-white py-36">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Book an Appointment
@@ -137,7 +128,6 @@ export default function BookAppointmentPage() {
       <section className="py-20 bg-gradient-to-b from-white via-green-50 to-white">
         <div className="max-w-3xl mx-auto px-6">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800 mb-2">
                 Appointment Details
@@ -160,36 +150,24 @@ export default function BookAppointmentPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-
-              <input
-                type="text"
-                name="name"
-                required
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Full Name"
-                className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
-              />
-
-              <input
-                type="email"
-                name="email"
-                required
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Email Address"
-                className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
-              />
-
-              <input
-                type="tel"
-                name="phone"
-                required
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="Phone Number"
-                className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
-              />
+              {["name", "email", "phone"].map((field) => (
+                <input
+                  key={field}
+                  type={field === "email" ? "email" : field === "phone" ? "tel" : "text"}
+                  name={field}
+                  required
+                  value={form[field]}
+                  onChange={handleChange}
+                  placeholder={
+                    field === "name"
+                      ? "Full Name"
+                      : field === "email"
+                      ? "Email Address"
+                      : "Phone Number"
+                  }
+                  className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
+                />
+              ))}
 
               <select
                 name="department"
@@ -233,17 +211,85 @@ export default function BookAppointmentPage() {
                   "04:00 PM",
                   "05:00 PM",
                 ].map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
                 ))}
               </select>
 
-              {/* FILE UPLOAD (OPTIONAL, NORMAL FIELD, AFTER TIME) */}
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                onChange={(e) => setReportFile(e.target.files[0])}
-                className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
-              />
+              {/* FILE UPLOAD */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Medical Report (optional)
+                </label>
+
+                <div
+                  className="relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:border-green-500 transition"
+                  onClick={() =>
+                    document.getElementById("reportUpload").click()
+                  }
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    handleFileSelect(e.dataTransfer.files[0]);
+                  }}
+                >
+                  <input
+                    id="reportUpload"
+                    type="file"
+                    accept=".pdf,image/*"
+                    className="hidden"
+                    onChange={(e) =>
+                      handleFileSelect(e.target.files[0])
+                    }
+                  />
+
+                  <div className="text-center">
+                    <div className="mx-auto mb-3 text-gray-400 text-3xl">+</div>
+                    <p className="text-sm text-gray-600">
+                      Drag and drop or{" "}
+                      <span className="text-green-600 font-medium underline">
+                        browse
+                      </span>{" "}
+                      your files
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PDF or Image files only
+                    </p>
+                  </div>
+                </div>
+
+                {previewUrl && (
+                  <div className="mt-4 relative inline-block">
+                    <button
+                      type="button"
+                      onClick={removeFile}
+                      className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-red-500 hover:text-white transition shadow"
+                    >
+                      ✕
+                    </button>
+
+                    {reportFile?.type.startsWith("image/") ? (
+                      <img
+                        src={previewUrl}
+                        alt="Medical Report Preview"
+                        className="max-h-48 rounded-lg border"
+                      />
+                    ) : (
+                      <div className="p-4 border rounded-lg bg-gray-50">
+                        <a
+                          href={previewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-700 underline font-medium"
+                        >
+                          View uploaded PDF
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <textarea
                 name="reason"
@@ -265,7 +311,6 @@ export default function BookAppointmentPage() {
               >
                 {loading ? "Submitting..." : "Submit Appointment Request"}
               </button>
-
             </form>
           </div>
         </div>
