@@ -1,5 +1,6 @@
 const Booking = require("../models/booking");
 const sendEmail = require("../utils/sendEmail");
+const ActivityLog = require("../models/activityLog");
 
 /* ===============================
    CREATE BOOKING (USER)
@@ -24,6 +25,13 @@ exports.createBooking = async (req, res) => {
       time,
       reason,
       status: "Pending",
+    });
+
+    // ✅ ACTIVITY LOG
+    await ActivityLog.create({
+      message: `New booking created for ${name}`,
+      type: "BOOKING",
+      performedBy: "User",
     });
 
     // 📧 EMAIL TO USER (PENDING)
@@ -110,6 +118,13 @@ exports.updateBooking = async (req, res) => {
       } catch (err) {
         console.log("Email failed:", err.message);
       }
+
+      // ✅ ACTIVITY LOG (STATUS CHANGE)
+      await ActivityLog.create({
+        message: `Booking status updated to ${updatedBooking.status} for ${updatedBooking.name}`,
+        type: "BOOKING",
+        performedBy: "Admin",
+      });
     }
 
     return res.json({
@@ -128,12 +143,24 @@ exports.updateBooking = async (req, res) => {
 exports.deleteBooking = async (req, res) => {
   try {
     const deleted = await Booking.findByIdAndDelete(req.params.id);
+
     if (!deleted) {
       return res
         .status(404)
         .json({ success: false, message: "Not found" });
     }
-    return res.json({ success: true, message: "Booking deleted" });
+
+    // ✅ ACTIVITY LOG
+    await ActivityLog.create({
+      message: `Booking deleted for ${deleted.name}`,
+      type: "BOOKING",
+      performedBy: "Admin",
+    });
+
+    return res.json({
+      success: true,
+      message: "Booking deleted",
+    });
   } catch {
     return res.status(500).json({ success: false });
   }
