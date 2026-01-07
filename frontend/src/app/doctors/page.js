@@ -49,7 +49,7 @@ export default function DoctorsPage() {
 
       {/* ---------------- HERO ---------------- */}
       <section className="relative bg-gradient-to-br from-green-700 via-green-600 to-green-800 text-white py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        {/* <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div> */}
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <div className="inline-block mb-4 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
             <span className="text-sm font-semibold tracking-wide">
@@ -193,7 +193,7 @@ export default function DoctorsPage() {
 
       {/* ---------------- CTA (RESTORED) ---------------- */}
       <section className="py-24 bg-gradient-to-br from-green-50 via-white to-green-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+        {/* <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div> */}
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <div className="bg-white rounded-3xl shadow-2xl p-12 border border-green-100">
             <div className="text-5xl mb-6">🩺</div>
