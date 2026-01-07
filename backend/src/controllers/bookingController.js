@@ -7,7 +7,17 @@ const ActivityLog = require("../models/activityLog");
    =============================== */
 exports.createBooking = async (req, res) => {
   try {
-    const { name, email, phone, department, date, time, reason } = req.body;
+    console.log("REQ BODY 👉", req.body); // 👈 ADD THIS
+    const { 
+  name, 
+  email, 
+  phone, 
+  department, 
+  date, 
+  time, 
+  reason,
+  reportUrl // ✅ ADD THIS
+} = req.body;
 
     if (!name || !email || !phone || !department || !date || !time) {
       return res.status(400).json({
@@ -16,16 +26,18 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-    const booking = await Booking.create({
-      name,
-      email,
-      phone,
-      department,
-      date,
-      time,
-      reason,
-      status: "Pending",
-    });
+ const booking = await Booking.create({
+  name,
+  email,
+  phone,
+  department,
+  date,
+  time,
+  reason,
+  reportUrl, // ✅ ADD THIS
+  status: "Pending",
+});
+
 
     // ✅ ACTIVITY LOG
     await ActivityLog.create({

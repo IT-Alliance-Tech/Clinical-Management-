@@ -45,7 +45,7 @@ exports.createContact = async (req, res) => {
       performedBy: "User",
     });
 
-    console.log(`✅ Contact received from ${fullName} (${email})`);
+ 
 
     return res.status(201).json({
       success: true,
@@ -53,7 +53,7 @@ exports.createContact = async (req, res) => {
       data: saved,
     });
   } catch (error) {
-    console.error("❌ Error creating contact:", error);
+   
     return res.status(500).json({
       success: false,
       message: "Failed to save contact",
@@ -72,7 +72,6 @@ exports.getAllContacts = async (req, res) => {
       .sort({ createdAt: -1 }) // Newest first
       .lean();
 
-    console.log(`📥 Admin retrieved ${contacts.length} contacts`);
 
     return res.status(200).json({
       success: true,
@@ -80,7 +79,7 @@ exports.getAllContacts = async (req, res) => {
       data: contacts,
     });
   } catch (error) {
-    console.error("❌ Error fetching contacts:", error);
+   
     return res.status(500).json({
       success: false,
       message: "Failed to fetch contacts",

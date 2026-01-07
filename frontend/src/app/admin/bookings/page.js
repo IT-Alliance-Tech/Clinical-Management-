@@ -440,142 +440,153 @@ const handleViewHistory = async (booking) => {
 
           {/* Table Card */}
           <Card sx={{ border: "1px solid #e0e0e0" }}>
-            <CardContent sx={{ p: 0 }}>
-              <TableContainer>
-                <Table sx={{ minWidth: 1000 }}>
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: "#f8faf9" }}>
-                      <TableCell sx={{ fontWeight: 700, py: 2 }}>Patient Name</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Time</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }} align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
+  <CardContent sx={{ p: 0 }}>
+    <TableContainer>
+      <Table sx={{ minWidth: 1100 }}>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: "#f8faf9" }}>
+            <TableCell sx={{ fontWeight: 700 }}>Patient Name</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Time</TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+            <TableCell sx={{ fontWeight: 700 }} align="center">
+              Report
+            </TableCell>
+            <TableCell sx={{ fontWeight: 700 }} align="center">
+              Actions
+            </TableCell>
+          </TableRow>
+        </TableHead>
 
-                  <TableBody>
-                    {filteredBookings.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                          <Typography color="text.secondary">
-                            No bookings found
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
+        <TableBody>
+          {filteredBookings.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                <Typography color="text.secondary">
+                  No bookings found
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredBookings
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((b) => (
+                
+                <TableRow key={b._id}>
+                  <TableCell>{b.name}</TableCell>
+                  <TableCell>{b.email}</TableCell>
+                  <TableCell>{b.phone}</TableCell>
+
+                  <TableCell>
+                    <Chip
+                      label={b.department}
+                      size="small"
+                      sx={{
+                        backgroundColor: "#e8f5e9",
+                        color: "#2e7d32",
+                        fontWeight: 500,
+                      }}
+                    />
+                  </TableCell>
+
+                  <TableCell>{b.date}</TableCell>
+                  <TableCell>{b.time}</TableCell>
+
+                  <TableCell>
+                    <Chip
+                      label={b.status}
+                      size="small"
+                      sx={{
+                        backgroundColor: getStatusColor(b.status),
+                        color: "#fff",
+                        fontWeight: 600,
+                        minWidth: 90,
+                      }}
+                    />
+                  </TableCell>
+
+                  {/* ✅ REPORT COLUMN */}
+                  <TableCell align="center">
+                    {b.reportUrl ? (
+                      <Button
+                        size="small"
+                        component="a"
+                        href={b.reportUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          textTransform: "none",
+                          fontSize: "0.75rem",
+                          color: "#1565c0",
+                          "&:hover": {
+                            backgroundColor: "#e3f2fd",
+                          },
+                        }}
+                      >
+                        View Report
+                      </Button>
+                      
                     ) : (
-                      filteredBookings
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((b) => (
-                          <TableRow 
-                            key={b._id}
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: "#f9fafb",
-                              },
-                            }}
-                          >
-                            <TableCell sx={{ fontWeight: 500 }}>{b.name}</TableCell>
-                            <TableCell>{b.email}</TableCell>
-                            <TableCell>{b.phone}</TableCell>
-                            <TableCell>
-                              <Chip
-                                label={b.department}
-                                size="small"
-                                sx={{
-                                  backgroundColor: "#e8f5e9",
-                                  color: "#2e7d32",
-                                  fontWeight: 500,
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>{b.date}</TableCell>
-                            <TableCell>{b.time}</TableCell>
-                            <TableCell>
-                              <Chip
-                                label={b.status}
-                                size="small"
-                                sx={{
-                                  backgroundColor: getStatusColor(b.status),
-                                  color: "#fff",
-                                  fontWeight: 600,
-                                  minWidth: 90,
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell align="center">
-                              <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-                                                             <Button
-  size="small"
-  onClick={() => handleViewHistory(b)}
-  sx={{
-    minWidth: "auto",
-    p: 1,
-    color: "#1976d2",
-    "&:hover": {
-      backgroundColor: "#e3f2fd",
-    },
-  }}
->
-  📜
-</Button>
-                                <Button
-                                  size="small"
-                                  onClick={() => handleEdit(b)}
-                                  sx={{
-                                    minWidth: "auto",
-                                    p: 1,
-                                    color: "#2e7d32",
-                                    "&:hover": {
-                                      backgroundColor: "#e8f5e9",
-                                    },
-                                  }}
-                                >
-                                  <EditIcon fontSize="small" />
-                                </Button>
-                                <Button
-                                  size="small"
-                                  onClick={() => handleDelete(b._id)}
-                                  sx={{
-                                    minWidth: "auto",
-                                    p: 1,
-                                    color: "#d32f2f",
-                                    "&:hover": {
-                                      backgroundColor: "#ffebee",
-                                    },
-                                  }}
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </Button>
-                              </Box>
-                            </TableCell>
-                          </TableRow>
-                        ))
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        —
+                      </Typography>
                     )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                  </TableCell>
 
-              <TablePagination
-                component="div"
-                count={filteredBookings.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={(e, p) => setPage(p)}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPage(parseInt(e.target.value, 10));
-                  setPage(0);
-                }}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                sx={{
-                  borderTop: "1px solid #e0e0e0",
-                  backgroundColor: "#fafafa",
-                }}
-              />
-            </CardContent>
-          </Card>
+                  {/* ✅ ACTIONS */}
+                  <TableCell align="center">
+                    <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+                      <Button
+                        size="small"
+                        onClick={() => handleViewHistory(b)}
+                      >
+                        History
+                      </Button>
+
+                      <Button
+                        size="small"
+                        onClick={() => handleEdit(b)}
+                      >
+                        Edit
+                      </Button>
+
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(b._id)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+
+    <TablePagination
+      component="div"
+      count={filteredBookings.length}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      onPageChange={(e, p) => setPage(p)}
+      onRowsPerPageChange={(e) => {
+        setRowsPerPage(parseInt(e.target.value, 10));
+        setPage(0);
+      }}
+      rowsPerPageOptions={[5, 10, 25, 50]}
+    />
+  </CardContent>
+</Card>
+
 
           <Dialog  
             open={openEdit} 
