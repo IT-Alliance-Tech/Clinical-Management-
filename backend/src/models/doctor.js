@@ -10,6 +10,9 @@ const DoctorSchema = new mongoose.Schema(
     consultationFee: { type: Number, required: true },
     about: String,
     profileImage: String,
+    image: {
+  type: String,
+},
     availability: {
       days: [String],
       startTime: String,
