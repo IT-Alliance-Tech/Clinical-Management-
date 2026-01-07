@@ -28,9 +28,9 @@ export default function BookAppointmentPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  /* ---------------- HANDLERS ---------------- */
+  
 
-  const handleChange = (e) => {
+  const handleChange = (e) => { 
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
   };
