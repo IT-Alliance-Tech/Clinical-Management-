@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 const DEPARTMENTS = [
   "General Medicine",
@@ -27,79 +28,101 @@ export default function BookAppointmentPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-
-  
+  const [reportFile, setReportFile] = useState(null);
 
   const handleChange = (e) => { 
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
 
-  try {
-    const payload = {
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      department: form.department,
-      date: form.date,
-      time: form.time,
-      reason: form.reason,
-    };
+    try {
+      let reportUrl = null;
 
-    const res = await fetch(
-      `${API_BASE_URL}/api/bookings`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      // ✅ Upload file only if selected
+      if (reportFile) {
+        const fileExt = reportFile.name.split(".").pop();
+        const fileName = `${Date.now()}-${form.phone}.${fileExt}`;
+
+        const { error } = await supabase.storage
+          .from("patient-reports")
+          .upload(fileName, reportFile);
+
+        if (error) {
+          throw new Error("Failed to upload medical report");
+        }
+
+        const { data } = supabase.storage
+          .from("patient-reports")
+          .getPublicUrl(fileName);
+
+        reportUrl = data.publicUrl;
       }
-    );
 
-    const data = await res.json();
+      const payload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        department: form.department,
+        date: form.date,
+        time: form.time,
+        reason: form.reason,
+        reportUrl, // 👈 added
+      };
 
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to book appointment");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/bookings`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to book appointment");
+      }
+
+      setMessage({
+        type: "success",
+        text: "Appointment request submitted successfully!",
+      });
+
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        department: "",
+        date: "",
+        time: "",
+        reason: "",
+      });
+
+      setReportFile(null);
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.message,
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setMessage({
-      type: "success",
-      text: "Appointment request submitted successfully!",
-    });
-
-    setForm({
-      name: "",
-      email: "",
-      phone: "",
-      department: "",
-      date: "",
-      time: "",
-      reason: "",
-    });
-  } catch (error) {
-    setMessage({
-      type: "error",
-      text: error.message,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <main className="bg-white text-gray-800">
 
-      {/* ---------------- HERO ---------------- */}
+      {/* HERO */}
       <section className="relative bg-gradient-to-r from-green-700 via-green-600 to-green-700 text-white py-36">
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent"></div>
-
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Book an Appointment
@@ -110,10 +133,9 @@ const handleSubmit = async (e) => {
         </div>
       </section>
 
-      {/* ---------------- FORM ---------------- */}
+      {/* FORM */}
       <section className="py-20 bg-gradient-to-b from-white via-green-50 to-white">
         <div className="max-w-3xl mx-auto px-6">
-
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
 
             <div className="text-center mb-8">
@@ -125,7 +147,6 @@ const handleSubmit = async (e) => {
               </p>
             </div>
 
-            {/* Status Message */}
             {message && (
               <div
                 className={`mb-6 text-center px-4 py-3 rounded-lg font-medium ${
@@ -140,7 +161,6 @@ const handleSubmit = async (e) => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Name */}
               <input
                 type="text"
                 name="name"
@@ -151,7 +171,6 @@ const handleSubmit = async (e) => {
                 className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
               />
 
-              {/* Email */}
               <input
                 type="email"
                 name="email"
@@ -162,7 +181,6 @@ const handleSubmit = async (e) => {
                 className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
               />
 
-              {/* Phone */}
               <input
                 type="tel"
                 name="phone"
@@ -173,7 +191,6 @@ const handleSubmit = async (e) => {
                 className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
               />
 
-              {/* Department */}
               <select
                 name="department"
                 required
@@ -189,7 +206,6 @@ const handleSubmit = async (e) => {
                 ))}
               </select>
 
-              {/* Date */}
               <input
                 type="date"
                 name="date"
@@ -199,7 +215,6 @@ const handleSubmit = async (e) => {
                 className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
               />
 
-              {/* Time */}
               <select
                 name="time"
                 required
@@ -222,7 +237,14 @@ const handleSubmit = async (e) => {
                 ))}
               </select>
 
-              {/* Reason */}
+              {/* FILE UPLOAD (OPTIONAL, NORMAL FIELD, AFTER TIME) */}
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(e) => setReportFile(e.target.files[0])}
+                className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
+              />
+
               <textarea
                 name="reason"
                 rows={4}
@@ -232,7 +254,6 @@ const handleSubmit = async (e) => {
                 className="w-full rounded-lg border px-4 py-3 focus:ring-2 focus:ring-green-600"
               />
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}

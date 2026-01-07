@@ -1,5 +1,5 @@
 const express = require("express");
-console.log("🔥 activityRoutes.js LOADED");
+
 
 const router = express.Router();
 
