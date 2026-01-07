@@ -9,6 +9,10 @@ const bookingSchema = new mongoose.Schema(
     date: { type: String, required: true },
     time: { type: String, required: true },
     reason: String,
+    reportUrl: {
+  type: String,
+  default: null,
+},
     status: {
       type: String,
       enum: ["Pending", "Confirmed", "Cancelled"],
@@ -20,6 +24,7 @@ const bookingSchema = new mongoose.Schema(
 rescheduledAt: {
   type: Date,
 },
+
 
   },
   { timestamps: true }
