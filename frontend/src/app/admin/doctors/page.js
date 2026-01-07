@@ -40,6 +40,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { supabase } from "@/lib/supabaseClient";
+
 
 import { apiRequest } from "@/config/api";
 import { useRouter } from "next/navigation";
@@ -116,6 +118,34 @@ export default function DoctorsAdminPage() {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState(null);
+  const [doctorImage, setDoctorImage] = useState(null);
+const [uploading, setUploading] = useState(false);
+
+const uploadDoctorImage = async (file) => {
+  if (!file) return null;
+
+  setUploading(true);
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `doctor-${Date.now()}.${fileExt}`;
+
+  const { error } = await supabase.storage
+    .from("doctor-images")
+    .upload(fileName, file);
+
+  if (error) {
+    alert("Image upload failed");
+    setUploading(false);
+    return null;
+  }
+
+  const { data } = supabase.storage
+    .from("doctor-images")
+    .getPublicUrl(fileName);
+
+  setUploading(false);
+  return data.publicUrl;
+};
 
   const [form, setForm] = useState({
     name: "",
@@ -221,27 +251,37 @@ export default function DoctorsAdminPage() {
     }));
   };
 
-  const submitDoctor = async () => {
-    const payload = {
-      ...form,
-      experience: Number(form.experience),
-      consultationFee: Number(form.consultationFee),
-    };
+ const submitDoctor = async () => {
+  let imageUrl = editingDoctor?.image || null;
 
-    const endpoint = editingDoctor
-      ? `/api/doctors/${editingDoctor._id}`
-      : `/api/doctors`;
+  if (doctorImage) {
+    imageUrl = await uploadDoctorImage(doctorImage);
+    if (!imageUrl) return;
+  }
 
-    const method = editingDoctor ? "PUT" : "POST";
-
-    await apiRequest(endpoint, {
-      method,
-      body: JSON.stringify(payload),
-    });
-
-    setOpenDialog(false);
-    fetchDoctors();
+  const payload = {
+    ...form,
+    experience: Number(form.experience),
+    consultationFee: Number(form.consultationFee),
+    image: imageUrl, // ✅ ADD THIS
   };
+
+  const endpoint = editingDoctor
+    ? `/api/doctors/${editingDoctor._id}`
+    : `/api/doctors`;
+
+  const method = editingDoctor ? "PUT" : "POST";
+
+  await apiRequest(endpoint, {
+    method,
+    body: JSON.stringify(payload),
+  });
+
+  setDoctorImage(null);
+  setOpenDialog(false);
+  fetchDoctors();
+};
+
 
   const toggleStatus = async (doc) => {
     await apiRequest(`/api/doctors/${doc._id}/status`, {
@@ -741,216 +781,242 @@ export default function DoctorsAdminPage() {
           </Card>
 
           {/* Add/Edit Dialog */}
-          <Dialog
-            open={openDialog}
-            onClose={() => setOpenDialog(false)}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: 3,
-              },
-            }}
+<Dialog
+  open={openDialog}
+  onClose={() => setOpenDialog(false)}
+  maxWidth="md"
+  fullWidth
+  PaperProps={{ sx: { borderRadius: 3 } }}
+>
+  <DialogTitle sx={{ fontWeight: 700 }}>
+    {editingDoctor ? "Edit Doctor" : "Add New Doctor"}
+  </DialogTitle>
+
+  <DialogContent dividers sx={{ py: 3 }}>
+    <Grid container spacing={2.5}>
+      {/* Doctor Name */}
+      <Grid item xs={12} sm={4}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Doctor Name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { height: 56 } }}
+        />
+      </Grid>
+
+      {/* Email */}
+      <Grid item xs={12} sm={4}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Email Address"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { height: 56 } }}
+        />
+      </Grid>
+
+      {/* Phone */}
+      <Grid item xs={12} sm={4}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Phone Number"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { height: 56 } }}
+        />
+      </Grid>
+
+      {/* Image Upload */}
+      <Grid item xs={12} sm={4}>
+        <Box
+          component="label"
+          sx={{
+            height: 56,
+            border: "1px dashed #c4c4c4",
+            borderRadius: 1,
+            px: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            "&:hover": {
+              borderColor: "#2e7d32",
+              backgroundColor: "#f1f8f4",
+            },
+          }}
+        >
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{ maxWidth: "70%", color: doctorImage ? "#2e7d32" : "#777" }}
           >
-            <DialogTitle
-              sx={{ pb: 1, fontWeight: 700, fontSize: "1.25rem" }}
-            >
-              {editingDoctor ? "Edit Doctor" : "Add New Doctor"}
-            </DialogTitle>
+            {doctorImage ? doctorImage.name : "Upload Doctor Image"}
+          </Typography>
+          <Typography sx={{ color: "#2e7d32", fontWeight: 600 }}>
+            Browse
+          </Typography>
+          <input
+            type="file"
+            hidden
+            accept="image/*"
+            onChange={(e) => setDoctorImage(e.target.files[0])}
+          />
+        </Box>
+      </Grid>
 
-            <DialogContent dividers sx={{ py: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Doctor Name"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Specialization</InputLabel>
-                    <Select
-                      name="specialization"
-                      value={form.specialization}
-                      label="Specialization"
-                      onChange={handleChange}
-                    >
-                      {SPECIALIZATIONS.map((s) => (
-                        <MenuItem key={s} value={s}>
-                          {s}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Experience (Years)"
-                    name="experience"
-                    value={form.experience}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Consultation Fee (₹)"
-                    name="consultationFee"
-                    value={form.consultationFee}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
+      {/* Specialization */}
+      <Grid item xs={12} sm={4}>
+        <FormControl fullWidth size="small">
+          <InputLabel shrink>Specialization</InputLabel>
+          <Select
+            name="specialization"
+            value={form.specialization}
+            displayEmpty
+            notched
+            onChange={handleChange}
+            sx={{ height: 56 }}
+          >
+            <MenuItem value="">
+              <em>Select Specialization</em>
+            </MenuItem>
+            {SPECIALIZATIONS.map((s) => (
+              <MenuItem key={s} value={s}>{s}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
 
-              <Typography sx={{ mt: 3, mb: 1, fontWeight: 600 }}>
-                Available Days
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 3 }}>
-                {DAYS.map((d) => (
-                  <Chip
-                    key={d}
-                    label={d}
-                    clickable
-                    onClick={() => toggleDay(d)}
-                    sx={{
-                      backgroundColor: form.availability.days.includes(d)
-                        ? "#2e7d32"
-                        : "#f0f0f0",
-                      color: form.availability.days.includes(d)
-                        ? "#fff"
-                        : "#666",
-                      fontWeight: form.availability.days.includes(d)
-                        ? 600
-                        : 400,
-                      "&:hover": {
-                        backgroundColor: form.availability.days.includes(d)
-                          ? "#1b5e20"
-                          : "#e0e0e0",
-                      },
-                    }}
-                  />
-                ))}
-              </Box>
+      {/* Experience */}
+      <Grid item xs={12} sm={2}>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          label="Experience (Years)"
+          name="experience"
+          value={form.experience}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { height: 56 } }}
+        />
+      </Grid>
 
-              <Typography sx={{ mb: 1, fontWeight: 600 }}>
-                Consultation Timings
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    type="time"
-                    label="Start Time"
-                    name="availability.startTime"
-                    value={form.availability.startTime}
-                    onChange={handleChange}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    type="time"
-                    label="End Time"
-                    name="availability.endTime"
-                    value={form.availability.endTime}
-                    onChange={handleChange}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Slot Duration</InputLabel>
-                    <Select
-                      name="availability.slotDuration"
-                      value={form.availability.slotDuration}
-                      label="Slot Duration"
-                      onChange={handleChange}
-                    >
-                      <MenuItem value={15}>15 minutes</MenuItem>
-                      <MenuItem value={30}>30 minutes</MenuItem>
-                      <MenuItem value={45}>45 minutes</MenuItem>
-                      <MenuItem value={60}>60 minutes</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
+      {/* Fee */}
+      <Grid item xs={12} sm={2}>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          label="Consultation Fee (₹)"
+          name="consultationFee"
+          value={form.consultationFee}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { height: 56 } }}
+        />
+      </Grid>
+    </Grid>
 
-              <FormControlLabel
-                sx={{ mt: 3 }}
-                control={
-                  <Switch
-                    checked={form.isActive}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, isActive: e.target.checked }))
-                    }
-                    sx={{
-                      "& .MuiSwitch-switchBase.Mui-checked": {
-                        color: "#2e7d32",
-                      },
-                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                        {
-                          backgroundColor: "#2e7d32",
-                        },
-                    }}
-                  />
-                }
-                label={
-                  <Typography sx={{ fontWeight: 500 }}>
-                    {form.isActive ? "Active" : "Inactive"}
-                  </Typography>
-                }
-              />
-            </DialogContent>
+    {/* Available Days */}
+    <Typography sx={{ mt: 3, mb: 1, fontWeight: 600 }}>
+      Available Days
+    </Typography>
 
-            <DialogActions sx={{ p: 2.5, gap: 1 }}>
-              <Button
-                onClick={() => setOpenDialog(false)}
-                variant="outlined"
-                sx={{ minWidth: 100 }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                onClick={submitDoctor}
-                sx={{
-                  minWidth: 100,
-                  backgroundColor: "#2e7d32",
-                  "&:hover": {
-                    backgroundColor: "#1b5e20",
-                  },
-                }}
-              >
-                {editingDoctor ? "Update Doctor" : "Add Doctor"}
-              </Button>
-            </DialogActions>
-          </Dialog>
+    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 3 }}>
+      {DAYS.map((d) => (
+        <Chip
+          key={d}
+          label={d}
+          clickable
+          onClick={() => toggleDay(d)}
+          sx={{
+            minWidth: 90,
+            backgroundColor: form.availability.days.includes(d)
+              ? "#2e7d32"
+              : "#f0f0f0",
+            color: form.availability.days.includes(d) ? "#fff" : "#666",
+          }}
+        />
+      ))}
+    </Box>
+
+    {/* Timings */}
+    <Grid container spacing={2.5}>
+      <Grid item xs={12} sm={4}>
+        <TextField
+          fullWidth
+          size="small"
+          type="time"
+          label="Start Time"
+          name="availability.startTime"
+          value={form.availability.startTime}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <TextField
+          fullWidth
+          size="small"
+          type="time"
+          label="End Time"
+          name="availability.endTime"
+          value={form.availability.endTime}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <FormControl fullWidth size="small">
+          <InputLabel shrink>Slot Duration</InputLabel>
+          <Select
+            name="availability.slotDuration"
+            value={form.availability.slotDuration}
+            displayEmpty
+            notched
+            onChange={handleChange}
+            sx={{ height: 56 }}
+          >
+            <MenuItem value={15}>15 minutes</MenuItem>
+            <MenuItem value={30}>30 minutes</MenuItem>
+            <MenuItem value={45}>45 minutes</MenuItem>
+            <MenuItem value={60}>60 minutes</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+    </Grid>
+
+    {/* Status */}
+    <FormControlLabel
+      sx={{ mt: 3 }}
+      control={<Switch checked={form.isActive} />}
+      label={form.isActive ? "Active" : "Inactive"}
+    />
+  </DialogContent>
+
+  <DialogActions sx={{ p: 2.5 }}>
+    <Button variant="outlined" onClick={() => setOpenDialog(false)}>
+      Cancel
+    </Button>
+    <Button variant="contained" onClick={submitDoctor}>
+      {editingDoctor ? "Update Doctor" : "Add Doctor"}
+    </Button>
+  </DialogActions>
+</Dialog>
+
         </Container>
       </Box>
     </ThemeProvider>
