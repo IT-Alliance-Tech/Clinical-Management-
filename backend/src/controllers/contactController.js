@@ -1,4 +1,5 @@
-const Contact = require('../models/contact');
+const Contact = require("../models/contact");
+const ActivityLog = require("../models/activityLog");
 
 /**
  * ✅ PUBLIC: Create a contact submission
@@ -12,7 +13,7 @@ exports.createContact = async (req, res) => {
     if (!fullName || !email || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Full name, email, and message are required',
+        message: "Full name, email, and message are required",
       });
     }
 
@@ -21,7 +22,7 @@ exports.createContact = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid email format',
+        message: "Invalid email format",
       });
     }
 
@@ -32,23 +33,30 @@ exports.createContact = async (req, res) => {
       phone: phone || undefined,
       reason: reason || undefined,
       message,
-      status: 'new',
+      status: "new",
     });
 
     const saved = await contact.save();
+
+    // ✅ ACTIVITY LOG
+    await ActivityLog.create({
+      message: `New contact form submitted by ${fullName}`,
+      type: "CONTACT",
+      performedBy: "User",
+    });
 
     console.log(`✅ Contact received from ${fullName} (${email})`);
 
     return res.status(201).json({
       success: true,
-      message: 'Your message has been received. We will get back to you soon!',
+      message: "Your message has been received. We will get back to you soon!",
       data: saved,
     });
   } catch (error) {
-    console.error('❌ Error creating contact:', error);
+    console.error("❌ Error creating contact:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to save contact',
+      message: "Failed to save contact",
       error: error.message,
     });
   }
@@ -62,7 +70,7 @@ exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find()
       .sort({ createdAt: -1 }) // Newest first
-      .lean(); // Read-only, better performance
+      .lean();
 
     console.log(`📥 Admin retrieved ${contacts.length} contacts`);
 
@@ -72,10 +80,10 @@ exports.getAllContacts = async (req, res) => {
       data: contacts,
     });
   } catch (error) {
-    console.error('❌ Error fetching contacts:', error);
+    console.error("❌ Error fetching contacts:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch contacts',
+      message: "Failed to fetch contacts",
       error: error.message,
     });
   }

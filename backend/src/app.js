@@ -4,8 +4,11 @@ const cors = require("cors");
 const bookingRoutes = require("./routes/bookingRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const contactRoutes = require("./routes/contactRoutes");
-const calendlyRoutes = require("./routes/calendlyRoutes");
+// const calendlyRoutes = require("./routes/calendlyRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
+const activityRoutes = require("./routes/activityRoutes");
+
+
 
 const app = express();
 
@@ -24,9 +27,9 @@ app.use(express.json());
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contacts", contactRoutes);
-app.use("/api/calendly", calendlyRoutes);
+// app.use("/api/calendly", calendlyRoutes);
 app.use("/api/doctors", doctorRoutes);
-
+app.use("/api/activities", activityRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Clinical Management Backend is running" });
 });
