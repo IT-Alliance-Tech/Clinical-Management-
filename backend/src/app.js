@@ -27,6 +27,18 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/activities", activityRoutes);
 
+app.get("/api/diagnostic", (req, res) => {
+  res.json({
+    message: "DIAGNOSTIC ROUTE REACHED",
+    time: new Date().toISOString(),
+    activityRoutesExported: !!activityRoutes,
+    config: {
+      hasActivity: true,
+      hasActivities: true,
+    },
+  });
+});
+
 console.log("Activity Routes:", activityRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Clinical Management Backend is running" });
