@@ -46,17 +46,13 @@ export default function AdminDashboardPage() {
       try {
         setLoading(true);
 
-        const [
-          bookingsRes,
-          contactsRes,
-          doctorsRes,
-          activitiesRes,
-        ] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/bookings/admin/all`),
-          fetch(`${API_BASE_URL}/api/contacts`),
-          fetch(`${API_BASE_URL}/api/doctors/admin/all`),
-          fetch(`${API_BASE_URL}/api/activities/recent`),
-        ]);
+        const [bookingsRes, contactsRes, doctorsRes, activitiesRes] =
+          await Promise.all([
+            fetch(`${API_BASE_URL}/api/bookings/admin/all`),
+            fetch(`${API_BASE_URL}/api/contacts`),
+            fetch(`${API_BASE_URL}/api/doctors/admin/all`),
+            fetch(`${API_BASE_URL}/api/activities`),
+          ]);
 
         if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
         if (!contactsRes.ok) throw new Error("Failed to fetch contacts");
@@ -97,7 +93,14 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress size={50} sx={{ color: "#2e7d32" }} />
       </Box>
     );
@@ -106,7 +109,9 @@ export default function AdminDashboardPage() {
   if (error) {
     return (
       <Container sx={{ mt: 4 }}>
-        <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>
+        <Alert severity="error" sx={{ borderRadius: 2 }}>
+          {error}
+        </Alert>
       </Container>
     );
   }
@@ -129,7 +134,10 @@ export default function AdminDashboardPage() {
         }}
       >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: "#1b5e20", mb: 0.5 }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, color: "#1b5e20", mb: 0.5 }}
+          >
             Admin Dashboard
           </Typography>
           <Typography variant="body2" sx={{ color: "#666" }}>
@@ -162,23 +170,36 @@ export default function AdminDashboardPage() {
       <Grid container spacing={3} alignItems="stretch" sx={{ mb: 5 }}>
         {/* BOOKINGS */}
         <Grid item xs={12} md={6} lg={4}>
-          <Card 
-            sx={{ 
-              height: "100%", 
+          <Card
+            sx={{
+              height: "100%",
               borderLeft: "6px solid #2e7d32",
               boxShadow: 3,
               transition: "all 0.3s ease",
               "&:hover": {
                 boxShadow: 6,
                 transform: "translateY(-4px)",
-              }
+              },
             }}
           >
-            <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", p: 3 }}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500, mb: 1 }}>
+            <CardContent
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                p: 3,
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                sx={{ fontWeight: 500, mb: 1 }}
+              >
                 Total Bookings
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}>
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}
+              >
                 {bookings.length}
               </Typography>
               <Box sx={{ mt: "auto", pt: 2 }}>
@@ -195,7 +216,7 @@ export default function AdminDashboardPage() {
                       "&:hover": {
                         borderColor: "#1b5e20",
                         backgroundColor: "rgba(46, 125, 50, 0.04)",
-                      }
+                      },
                     }}
                   >
                     View All
@@ -208,23 +229,36 @@ export default function AdminDashboardPage() {
 
         {/* CONTACTS */}
         <Grid item xs={12} md={6} lg={4}>
-          <Card 
-            sx={{ 
-              height: "100%", 
+          <Card
+            sx={{
+              height: "100%",
               borderLeft: "6px solid #2e7d32",
               boxShadow: 3,
               transition: "all 0.3s ease",
               "&:hover": {
                 boxShadow: 6,
                 transform: "translateY(-4px)",
-              }
+              },
             }}
           >
-            <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", p: 3 }}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500, mb: 1 }}>
+            <CardContent
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                p: 3,
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                sx={{ fontWeight: 500, mb: 1 }}
+              >
                 Contact Submissions
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}>
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}
+              >
                 {contactsCount}
               </Typography>
               <Box sx={{ mt: "auto", pt: 2 }}>
@@ -241,7 +275,7 @@ export default function AdminDashboardPage() {
                       "&:hover": {
                         borderColor: "#1b5e20",
                         backgroundColor: "rgba(46, 125, 50, 0.04)",
-                      }
+                      },
                     }}
                   >
                     View All
@@ -254,23 +288,36 @@ export default function AdminDashboardPage() {
 
         {/* DOCTORS */}
         <Grid item xs={12} md={6} lg={4}>
-          <Card 
-            sx={{ 
-              height: "100%", 
+          <Card
+            sx={{
+              height: "100%",
               borderLeft: "6px solid #2e7d32",
               boxShadow: 3,
               transition: "all 0.3s ease",
               "&:hover": {
                 boxShadow: 6,
                 transform: "translateY(-4px)",
-              }
+              },
             }}
           >
-            <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", p: 3 }}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500, mb: 1 }}>
+            <CardContent
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                p: 3,
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                sx={{ fontWeight: 500, mb: 1 }}
+              >
                 👨‍⚕️ Doctors
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}>
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: 700, color: "#2e7d32", my: 2 }}
+              >
                 {doctorsCount}
               </Typography>
               <Box sx={{ mt: "auto", pt: 2 }}>
@@ -287,7 +334,7 @@ export default function AdminDashboardPage() {
                       "&:hover": {
                         borderColor: "#1b5e20",
                         backgroundColor: "rgba(46, 125, 50, 0.04)",
-                      }
+                      },
                     }}
                   >
                     Manage
@@ -301,48 +348,78 @@ export default function AdminDashboardPage() {
 
       {/* RECENT ACTIVITIES */}
       <Box sx={{ mt: 6 }}>
-        <Box sx={{ 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "space-between",
-          mb: 3,
-          pb: 2,
-          borderBottom: "2px solid #e0e0e0"
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+            pb: 2,
+            borderBottom: "2px solid #e0e0e0",
+          }}
+        >
           <Typography variant="h5" sx={{ fontWeight: 700, color: "#1b5e20" }}>
             Recent Activities
           </Typography>
-          <Chip 
-            label={`${activities.length} Total`} 
-            sx={{ 
-              backgroundColor: "#2e7d32", 
+          <Chip
+            label={`${activities.length} Total`}
+            sx={{
+              backgroundColor: "#2e7d32",
               color: "#fff",
-              fontWeight: 600
-            }} 
+              fontWeight: 600,
+            }}
           />
         </Box>
 
-        <TableContainer 
-          component={Paper} 
-          sx={{ 
+        <TableContainer
+          component={Paper}
+          sx={{
             boxShadow: 3,
             borderRadius: 2,
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#2e7d32" }}>
-                <TableCell sx={{ color: "#fff", fontWeight: 700, fontSize: "0.95rem", py: 2 }}>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.95rem",
+                    py: 2,
+                  }}
+                >
                   Activity
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: 700, fontSize: "0.95rem", py: 2 }}>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.95rem",
+                    py: 2,
+                  }}
+                >
                   Type
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: 700, fontSize: "0.95rem", py: 2 }}>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.95rem",
+                    py: 2,
+                  }}
+                >
                   Performed By
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: 700, fontSize: "0.95rem", py: 2 }}>
+                <TableCell
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.95rem",
+                    py: 2,
+                  }}
+                >
                   Time
                 </TableCell>
               </TableRow>
@@ -359,34 +436,36 @@ export default function AdminDashboardPage() {
                 </TableRow>
               ) : (
                 activities.map((activity, index) => (
-                  <TableRow 
+                  <TableRow
                     key={activity._id}
                     sx={{
                       backgroundColor: index % 2 === 0 ? "#fff" : "#f9f9f9",
                       "&:hover": {
                         backgroundColor: "#e8f5e9",
                       },
-                      transition: "background-color 0.2s ease"
+                      transition: "background-color 0.2s ease",
                     }}
                   >
                     <TableCell sx={{ py: 2.5, fontWeight: 500 }}>
                       {activity.message}
                     </TableCell>
                     <TableCell sx={{ py: 2.5 }}>
-                      <Chip 
-                        label={activity.type} 
+                      <Chip
+                        label={activity.type}
                         size="small"
-                        sx={{ 
+                        sx={{
                           backgroundColor: "#c8e6c9",
                           color: "#1b5e20",
-                          fontWeight: 600
+                          fontWeight: 600,
                         }}
                       />
                     </TableCell>
                     <TableCell sx={{ py: 2.5, color: "#555" }}>
                       {activity.performedBy}
                     </TableCell>
-                    <TableCell sx={{ py: 2.5, color: "#777", fontSize: "0.9rem" }}>
+                    <TableCell
+                      sx={{ py: 2.5, color: "#777", fontSize: "0.9rem" }}
+                    >
                       {new Date(activity.createdAt).toLocaleString()}
                     </TableCell>
                   </TableRow>
