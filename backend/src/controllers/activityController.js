@@ -1,8 +1,10 @@
-const ActivityLog = require("../models/activityLog");
+const ActivitiesLog = require("../models/activitiesLog");
 
 exports.getAllRecentActivities = async (req, res) => {
   try {
-    const activities = await ActivityLog.find().sort({ createdAt: -1 }).lean();
+    const activities = await ActivitiesLog.find()
+      .sort({ createdAt: -1 })
+      .lean();
 
     return res.status(200).json({
       success: true,
