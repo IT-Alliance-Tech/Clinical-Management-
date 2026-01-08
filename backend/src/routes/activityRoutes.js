@@ -1,6 +1,5 @@
 const express = require("express");
 
-
 const router = express.Router();
 
 const ActivityLog = require("../models/activityLog");
@@ -12,6 +11,7 @@ router.get("/test", (req, res) => {
 
 // REAL ROUTE
 router.get("/recent", async (req, res) => {
+  console.log("GET /api/activity/recent or /api/activities/recent CALLED");
   try {
     const activities = await ActivityLog.find()
       .sort({ createdAt: -1 })
