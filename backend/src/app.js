@@ -8,17 +8,12 @@ const contactRoutes = require("./routes/contactRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 
-
-
 const app = express();
 
 app.use(cors());
 
 // Calendly webhook (RAW)
-app.use(
-  "/api/calendly/webhook",
-  express.raw({ type: "application/json" })
-);
+app.use("/api/calendly/webhook", express.raw({ type: "application/json" }));
 
 // JSON for others
 app.use(express.json());
@@ -29,7 +24,10 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/contacts", contactRoutes);
 // app.use("/api/calendly", calendlyRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/activity", activityRoutes);
 app.use("/api/activities", activityRoutes);
+
+console.log("Activity Routes:", activityRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Clinical Management Backend is running" });
 });
