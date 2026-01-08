@@ -7,7 +7,6 @@ const ActivityLog = require("../models/activityLog");
    =============================== */
 exports.createBooking = async (req, res) => {
   try {
-    console.log("REQ BODY 👉", req.body); // 👈 ADD THIS
     const { 
   name, 
   email, 
