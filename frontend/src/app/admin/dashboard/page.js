@@ -28,6 +28,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+
 export default function AdminDashboardPage() {
   const router = useRouter();
 
@@ -45,6 +46,8 @@ export default function AdminDashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
+        
+console.log("API_BASE_URL =", API_BASE_URL);
 
         const [
           bookingsRes,
@@ -55,7 +58,7 @@ export default function AdminDashboardPage() {
           fetch(`${API_BASE_URL}/api/bookings/admin/all`),
           fetch(`${API_BASE_URL}/api/contacts`),
           fetch(`${API_BASE_URL}/api/doctors/admin/all`),
-          fetch(`${API_BASE_URL}/api/activities/recent`),
+         fetch(`${API_BASE_URL}/api/activities/recent`),
         ]);
 
         if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
