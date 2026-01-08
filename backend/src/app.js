@@ -41,7 +41,11 @@ app.get("/api/diagnostic", (req, res) => {
 
 console.log("Activity Routes:", activityRoutes);
 app.get("/", (req, res) => {
-  res.json({ message: "Clinical Management Backend is running" });
+  res.json({
+    message: "Clinical Management Backend is running",
+    version: "1.0.1-diagnostic",
+    buildTime: new Date().toISOString(),
+  });
 });
 
 module.exports = app;
