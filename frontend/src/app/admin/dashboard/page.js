@@ -46,26 +46,24 @@ export default function AdminDashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        
-console.log("API_BASE_URL =", API_BASE_URL);
-
+      
         const [bookingsRes, contactsRes, doctorsRes, activitiesRes] =
           await Promise.all([
             fetch(`${API_BASE_URL}/api/bookings/admin/all`),
             fetch(`${API_BASE_URL}/api/contacts`),
             fetch(`${API_BASE_URL}/api/doctors/admin/all`),
-            fetch(`${API_BASE_URL}/api/activities`),
+            // fetch(`${API_BASE_URL}/api/activities`),
           ]);
 
         if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
         if (!contactsRes.ok) throw new Error("Failed to fetch contacts");
         if (!doctorsRes.ok) throw new Error("Failed to fetch doctors");
-        if (!activitiesRes.ok) throw new Error("Failed to fetch activities");
+        // if (!activitiesRes.ok) throw new Error("Failed to fetch activities");
 
         const bookingsData = await bookingsRes.json();
         const contactsData = await contactsRes.json();
         const doctorsData = await doctorsRes.json();
-        const activitiesData = await activitiesRes.json();
+        // const activitiesData = await activitiesRes.json();
 
         setBookings(bookingsData.data || []);
         setContactsCount(
@@ -74,7 +72,7 @@ console.log("API_BASE_URL =", API_BASE_URL);
         setDoctorsCount(
           Array.isArray(doctorsData.data) ? doctorsData.data.length : 0
         );
-        setActivities(activitiesData.data || []);
+        // setActivities(activitiesData.data || []);
       } catch (err) {
         setError(err.message || "Failed to load dashboard");
       } finally {
@@ -350,7 +348,7 @@ console.log("API_BASE_URL =", API_BASE_URL);
       </Grid>
 
       {/* RECENT ACTIVITIES */}
-      <Box sx={{ mt: 6 }}>
+      {/* <Box sx={{ mt: 6 }}>
         <Box
           sx={{
             display: "flex",
@@ -477,7 +475,7 @@ console.log("API_BASE_URL =", API_BASE_URL);
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
+      </Box> */}
     </Container>
   );
 }
